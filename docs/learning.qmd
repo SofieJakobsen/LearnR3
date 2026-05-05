@@ -1,6 +1,6 @@
 ---
 title: "Draft Quarto document"
-author: "Your Name"
+author: "Sofie H. G. Jakobsen"
 format: html
 ---
 
@@ -55,11 +55,59 @@ here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
 
 
 # > styler:::style_active_file()
-
 ```
 
 
+# Learn how to make functions!
+Everything in R is an object.
+some objects can preform an action which makes them a function.
+normally functions can be regonized by the () at theor end. 
+some functions do not have a () examples are <-, +, - ect. 
+
+A function is normally build like this:
 ```{r}
 
+name <- function(argument1, argument2) {
+  # body of function
+  output <- ...
+  return(output)
+}
+
 ```
 
+The function needs a name, arguments eg a data frame. the we add the body of the function which corrspond to what the function should do. 
+the last part is a return argument which gives us the results of the function
+
+
+## Create our own function
+
+make a function that can add two numbers together
+Option-shift-() = {}
+```{r}
+add_numbers <- function(num1, num2) {
+  added <- num1 + num2
+  return(added)
+}
+
+
+```
+
+
+add a roxygen skeleton to the function (insert a roxygen for you function (command-shift-p = roxyge, it should show up))
+```{r}
+#' Title: Add two numbers together.
+#'
+#' @param num1 A number here.
+#' @param num2 A number here.
+#'
+#' @returns Returns the sum of two numbers.
+#' @export # Mainly used for packages so delete it 
+#'
+#' @examples also if u create a package to provide an example of how it is used
+add_numbers <- function(num1, num2) {
+  added <- num1 + num2
+  return(added)
+}
+
+
+```
