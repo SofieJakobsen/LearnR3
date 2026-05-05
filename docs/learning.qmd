@@ -8,8 +8,32 @@ format: html
 
 ```{r setup}
 #| include: false
+
+library(tidyverse)
+library(here)
+library(snakecase)
 ```
 
+
+## Import new data
 ```{r}
-# Code chunk
+# Read file
+
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |> # Here stays in our project. #pipe command/shift/m
+  read_csv(show_col_types = FALSE,  #Remove the guessing from the read_csv function
+           name_repair = to_snake_case, #make it snake_case, under scroll between each word 
+           n_max = 100) #we use the _ type and not . cuz it is in the tidyverse package. 
+
 ```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
