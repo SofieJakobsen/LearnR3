@@ -26,9 +26,35 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |> # Here stays
 
 ```
 
-
+## Exercise: Reading other files.
+ 15.6 🧑‍💻 Exercise: Read in other data files
 
 ```{r}
+
+#5C - HR
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read_csv(show_col_types = FALSE,
+           name_repair= to_snake_case)
+
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+   read_csv(show_col_types = FALSE,  #Remove the guessing from the read_csv function
+           name_repair = to_snake_case, #make it snake_case, under scroll between each word 
+           n_max = 100)
+
+
+
+#6b - eda
+here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
+  read_csv(show_col_types = FALSE,
+           name_repair= to_snake_case)
+
+here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
+   read_csv(show_col_types = FALSE,  #Remove the guessing from the read_csv function
+           name_repair = to_snake_case, #make it snake_case, under scroll between each word 
+           n_max = 100)
+
+
+# > styler:::style_active_file()
 
 ```
 
