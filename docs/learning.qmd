@@ -7,16 +7,18 @@ format: html
 ## Header 1
 
 ```{r setup}
-#| include: false
 
 library(tidyverse)
 library(here)
-library(snakecase)
+#library(snakecase)
+source(here("R/functions.R"))
 ```
 
 
+
 ## Import new data
-```{r}
+```{r, eval=FALSE}
+
 # Read file
 
 here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |> # Here stays in our project. #pipe command/shift/m
@@ -29,7 +31,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |> # Here stays
 ## Exercise: Reading other files.
  15.6 🧑‍💻 Exercise: Read in other data files
 
-```{r}
+```{r, eval=FALSE}
 
 #5C - HR
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
@@ -65,7 +67,7 @@ normally functions can be regonized by the () at theor end.
 some functions do not have a () examples are <-, +, - ect. 
 
 A function is normally build like this:
-```{r}
+```{r, eval=FALSE}
 
 name <- function(argument1, argument2) {
   # body of function
@@ -83,7 +85,7 @@ the last part is a return argument which gives us the results of the function
 
 make a function that can add two numbers together
 Option-shift-() = {}
-```{r}
+```{r, eval=FALSE}
 add_numbers <- function(num1, num2) {
   added <- num1 + num2
   return(added)
@@ -94,7 +96,7 @@ add_numbers <- function(num1, num2) {
 
 
 add a roxygen skeleton to the function (insert a roxygen for you function (command-shift-p = roxyge, it should show up))
-```{r}
+```{r, eval=FALSE}
 #' Title: Add two numbers together.
 #'
 #' @param num1 A number here.
@@ -115,7 +117,7 @@ add_numbers <- function(num1, num2) {
 
 Now we learn to use a function in pratice for importin all the files
 check function name by writing ?function name and it will let u know if there ar eno functions witht this name
-```{r}
+```{r, eval=FALSE}
 
 #' Read in one nurses' stress data file
 #'
@@ -134,7 +136,7 @@ read <- function(file_path) {
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |> 
   read()
@@ -145,7 +147,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 
 
 
-```{r}
+```{r, eval=FALSE}
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |> 
   read()
 
@@ -153,7 +155,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 
  16.7 🧑‍💻 Exercise: Add another function argument to read different number of rows
 
-```{r}
+```{r, eval=FALSE}
 
 #' Read in one nurses' stress data file
 #'
@@ -174,7 +176,7 @@ read <- function(file_path, max_rows = 100) {
 
 
 
-```{r}
+```{r, eval=FALSE}
 # Outputs only 100 rows
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read()
@@ -191,7 +193,14 @@ pak::pak() #installs all packages the project is dependednt on
 
 
 ###Updating the function so it uses the right packages 
-```{r}
+```{r, eval=FALSE}
+#' Read in one nurses' stress data file.
+#'
+#' @param file_path Path to the data file.
+#' @param max_rows Maximum number of rows to read.
+#'
+#' @returns Outputs a data frame/tibble.
+#'
 read <- function(file_path, max_rows = 100) {
   data <- file_path |>
    readr::read_csv(show_col_types = FALSE,  
