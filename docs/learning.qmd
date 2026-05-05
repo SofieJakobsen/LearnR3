@@ -187,7 +187,19 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
+pak::pak() #installs all packages the project is dependednt on
 
 
+###Updating the function so it uses the right packages 
+```{r}
+read <- function(file_path, max_rows = 100) {
+  data <- file_path |>
+   readr::read_csv(show_col_types = FALSE,  
+           name_repair = snakecase::to_snake_case, 
+           n_max = max_rows
+   )
+  return(data)
+  }
+```
 
 
