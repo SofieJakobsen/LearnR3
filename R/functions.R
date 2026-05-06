@@ -84,3 +84,29 @@ get_participant_id <- function(data) {
 }
 
 
+
+
+#' Summraise data by daytime, mean, sd, median. across all numeric values?
+#'
+#' @param data the data fram eg HR
+#'
+#' @returns a data frame with ids, collection daytime and each daytime mean, sd and median
+
+summarise_by_datetime <- function(data) {
+  summarised_data <- data |>
+    # Fill in below with the code we just wrote.
+    dplyr::mutate(
+      collection_datetime = lubridate::round_date(
+        collection_datetime,
+        unit = "minute"
+      )
+    ) |>
+    dplyr::summarise(
+      dplyr::across(
+        tidyselect::where(is.numeric),
+        list(mean = mean, sd = sd, median = median)
+      ),
+      .by = c(id, collection_datetime)
+    )
+  return(summarised_data)
+}
