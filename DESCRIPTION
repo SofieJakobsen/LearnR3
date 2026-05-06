@@ -6,6 +6,7 @@ Encoding: UTF-8
 URL: https://github.com/SofieJakobsen/LearnR3
 BugReports: https://github.com/SofieJakobsen/LearnR3/issues
 Imports: 
+    fs,
     here,
     purrr,
     readr,
