@@ -64,4 +64,23 @@ read_all <- function(file, max_rows = 100) {
 
 
 
+#' Extract Id form the file_path_id
+#'
+#' @param data the coloum that ocntains the ID we would like to extract
+#'
+#' @returns the data frame with the new id coloum containing the ids with two alnum, where the file_path_ide is removed
+
+get_participant_id <- function(data) {
+  data_with_id <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        "(?<=/stress/)[:alnum:]{2}(?=/)" #?<= this means that it should look for this /stress/ to stand before the id [:alnum:]{2} that we arw looking for and from the following ?=/ is to remove or look for the id/ but not include the /.
+      ),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data_with_id)
+}
+
 
