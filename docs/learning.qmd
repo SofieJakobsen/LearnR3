@@ -547,4 +547,44 @@ summarise_by_datetime(hr_data)
 
 
 ### 20.7 🧑‍💻 Exercise: Start filling in docs/cleaning.qmd 
+### 20.8 🧑‍💻 Extra exercise: Create a function to read in any HR-type dataset
+
+```{r}
+
+#' Read file and process it, read all files, get ID and summarize by date. 
+#'
+#' @param filename the files the function should find eg HR.csv.gz 
+#' @param max_rows The number of rows it should load
+#'
+#' @returns a colelcted file with IDs groups ect 
+
+read_sensor_data <- function(filename, max_rows = 100) {
+  data <- read_all(filename, max_rows = max_rows) |>
+    get_participant_id() |>
+    summarise_by_datetime()
+  return(data)
+}
+
+read_sensor_data("HR.csv.gz")
+
+```
+
+20.9 🧑‍💻 Extra exercise: Modify the function so you can set your own unit of time
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
