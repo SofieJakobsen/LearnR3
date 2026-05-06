@@ -398,7 +398,7 @@ get_participant_id(hr_data)
 
 
 ### 19.8 🧑‍💻 Extra exercise: Simplify the regex with look arounds
-```{r}
+```{r, eval = FALSE}
 #' Extract Id form the file_path_id
 #'
 #' @param data the coloum that ocntains the ID we would like to extract 
@@ -422,5 +422,63 @@ get_participant_id(hr_data)
 ```
 
 # 20  Using split-apply-combine to help in processing
+
+
+```{r}
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id()
+
+hr_data
+
+
+hr_data |>
+  summarise(across(hr, mean))
+
+hr_data |>
+  summarise(across(hr, list(mean, median)))
+
+
+
+
+hr_data |>
+  summarise(across(hr, list(mean = mean)))
+
+
+hr_data |>
+  summarise(
+    across(
+      hr,
+      list(mean = mean, sd = sd, median = median)
+    )
+  )
+
+
+
+hr_data |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    )
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
