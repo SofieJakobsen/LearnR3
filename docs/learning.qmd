@@ -549,7 +549,37 @@ summarise_by_datetime(hr_data)
 ### 20.7 🧑‍💻 Exercise: Start filling in docs/cleaning.qmd 
 ### 20.8 🧑‍💻 Extra exercise: Create a function to read in any HR-type dataset
 
+### 20.9 🧑‍💻 Extra exercise: Modify the function so you can set your own unit of time
+
+
 ```{r}
+#' Summraise data by daytime, mean, sd, median. across all numeric values?
+#'
+#' @param data the data fram eg HR 
+#'
+#' @returns a data frame with ids, collection daytime and each daytime mean, sd and median 
+
+summarise_by_datetime <- function(data, unit = "minut") {
+  summarised_data <- data |>
+    # Fill in below with the code we just wrote.
+    dplyr::mutate(
+    collection_datetime = lubridate::round_date(
+      collection_datetime,
+      unit = "minute"
+    )
+  ) |>
+  dplyr::summarise(
+    dplyr::across(
+      tidyselect::where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime)
+  )
+  return(summarised_data)
+}
+
+
+###########################################
 
 #' Read file and process it, read all files, get ID and summarize by date. 
 #'
@@ -558,24 +588,20 @@ summarise_by_datetime(hr_data)
 #'
 #' @returns a colelcted file with IDs groups ect 
 
-read_sensor_data <- function(filename, max_rows = 100) {
+read_sensor_data <- function(filename, max_rows = 100, unit = "minut") {
   data <- read_all(filename, max_rows = max_rows) |>
     get_participant_id() |>
-    summarise_by_datetime()
+    summarise_by_datetime(unit=unit)
   return(data)
 }
 
-read_sensor_data("HR.csv.gz")
-
-```
-
-20.9 🧑‍💻 Extra exercise: Modify the function so you can set your own unit of time
-
-```{r}
+read_sensor_data("HR.csv.gz", unit = "week")
 
 ```
 
 
+
+# 21  Pivoting your data between long and wide
 
 
 
