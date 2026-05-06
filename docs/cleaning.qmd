@@ -7,9 +7,44 @@ format: html
 ## Header 1
 
 ```{r setup}
-#| include: false
+source(here::here("R/functions.R"))
 ```
 
+
+## Prepare HR data. 
 ```{r}
-# Code chunk
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+
+## Prepare ibi data
+```{r}
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+## Prepare temp data
+```{r}
+temp_data <- read_all("TEMP.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+
+## Prepare bvp data
+```{r}
+bvp_data <- read_all("BVP.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+
+## Prepare eda data
+```{r}
+eda_data <- read_all("EDA.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
 ```
