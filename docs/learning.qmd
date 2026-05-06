@@ -10,7 +10,8 @@ format: html
 
 library(tidyverse)
 library(here)
-#library(snakecase)
+#library(snakecase) # only used for read function which is now in the function documet
+library(fs)
 source(here("R/functions.R"))
 ```
 
@@ -210,5 +211,55 @@ read <- function(file_path, max_rows = 100) {
   return(data)
   }
 ```
+
+# Day 2
+
+## How to load more than one file?
+
+### Using map()
+we will use: 
+dir_ls() - directory that lists all files. recurse looks in all the subfolder, regexp is for the next session. This function is in the fs packages.
+This kinda genereate our vector like the description form the reading excersice. 
+```{r}
+
+
+hr_files <- here("data-raw/nurses-stress/") |> #pipe the first argument 
+  fs::dir_ls(regexp = "HR.csv.gz",
+         recurse = TRUE) # it will look in all the subfolders and it is looking for HR.csv.gz files in nurses-stress
+
+# add it into the map function
+
+###hr_data <- hr_files |> 
+###  purrr::map(read)
+
+#hr_data
+
+# we now want to combine the code (building the code form before)
+###hr_data <- hr_files |> 
+###  purrr::map(read) |>
+###  purrr::list_rbind()
+
+#remeber to add purrr usethis::use_package("purrr")
+#add id
+hr_data <- hr_files |> 
+  purrr::map(read) |>
+  purrr::list_rbind(names_to = "files_path_id") 
+#this id is horrible.. next session will change this 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

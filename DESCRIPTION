@@ -7,6 +7,7 @@ URL: https://github.com/SofieJakobsen/LearnR3
 BugReports: https://github.com/SofieJakobsen/LearnR3/issues
 Imports: 
     here,
+    purrr,
     readr,
     snakecase
 Depends: 
