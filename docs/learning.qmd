@@ -248,18 +248,83 @@ hr_data <- hr_files |>
 
 ```
 
+## 18.5 🧑‍💻 Exercise: Convert the map with reading code into a function
+
+```{r, eval = FALSE}
+#' Read in all files in the nurse-stress folder
+#'
+#' @param file_name the name or type of data that needs to be loaded.  
+#'
+#' @returns Dataframe with a Id, collectioin time and the data point ef hr. 
+
+read_all <- function(file_name) {
+  # Code that does something
+  hr_files <- here::here("data-raw/nurses-stress/") |> #pipe the first argument 
+  fs::dir_ls(regexp = file_name,
+         recurse = TRUE)
+
+  hr_data <- hr_files |> 
+  purrr::map(read) |>
+  purrr::list_rbind(names_to = "files_path_id") 
+
+  return(hr_data)
+}
+
+# this function was moved to functions.R 
+
+```
+
+
+```{r}
+
+
+hr_data <- read_all("HR.csv.gz")
+ibi_data <- read_all("IBI.csv.gz")
+bvp_data <- read_all("BVP.csv.gz")
+```
 
 
 
+18.6 🧑‍💻 Extra exercise: Include a new max_rows argument to read_all()'
+```{r, eval = FALSE}
+#' Read in all files in the nurse-stress folder
+#'
+#' @param file the name or type of data that needs to be loaded.  
+#'
+#' @returns Dataframe with a Id, collectioin time and the data point ef hr. 
+
+read_all <- function(file, max_rows = 100) {
+  # Code that does something
+  hr_files <- here::here("data-raw/nurses-stress/") |> #pipe the first argument 
+  fs::dir_ls(regexp = file,
+         recurse = TRUE)
+
+  hr_data <- hr_files |> 
+  purrr::map(\(file) read(file, max_rows = max_rows)) |> 
+  purrr::list_rbind(names_to = "files_path_id") 
+
+  return(hr_data)
+}
+
+# this function was moved to functions.R 
+
+read_all("HR.csv.gz", max_rows = 1000)
+read_all("HR.csv.gz", max_rows = 10)
+read_all("HR.csv.gz", max_rows = Inf)
+
+```
+
+
+```{r}
+read_all("HR.csv.gz", max_rows = 1000)
+read_all("HR.csv.gz", max_rows = 10)
+read_all("HR.csv.gz", max_rows = Inf)
+```
 
 
 
-
-
-
-
-
-
+## 18.7 🧑‍💻 Extra exercise: Move the here::here() path out of the function
+Se funktions dokumentet here er det opdateret så man kan ændre path
 
 
 
