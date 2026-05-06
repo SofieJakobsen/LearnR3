@@ -4,7 +4,7 @@ author: "Sofie H. G. Jakobsen"
 format: html
 ---
 
-## Header 1
+# Intermediate reproducible Research in R
 
 ```{r setup}
 
@@ -17,7 +17,9 @@ source(here("R/functions.R"))
 
 
 
-## Import new data
+## 15 Pre-process data as you import it
+
+### Import new data
 ```{r, eval=FALSE}
 
 # Read file
@@ -29,8 +31,8 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |> # Here stays
 
 ```
 
-## Exercise: Reading other files.
- 15.6 🧑‍💻 Exercise: Read in other data files
+
+### 15.6 🧑‍💻 Exercise: Read in other data files
 
 ```{r, eval=FALSE}
 
@@ -61,7 +63,7 @@ here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
 ```
 
 
-# Learn how to make functions!
+# 16  Bundling code into functions
 Everything in R is an object.
 some objects can preform an action which makes them a function.
 normally functions can be regonized by the () at theor end. 
@@ -95,7 +97,7 @@ add_numbers <- function(num1, num2) {
 
 ```
 
-
+### roxygen
 add a roxygen skeleton to the function (insert a roxygen for you function (command-shift-p = roxyge, it should show up))
 ```{r, eval=FALSE}
 #' Title: Add two numbers together.
@@ -154,7 +156,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 
 ```
 
- 16.7 🧑‍💻 Exercise: Add another function argument to read different number of rows
+### 16.7 🧑‍💻 Exercise: Add another function argument to read different number of rows
 
 ```{r, eval=FALSE}
 
@@ -190,10 +192,12 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
+
+# 17  Making robust and reusable functions
 pak::pak() #installs all packages the project is dependednt on
 
 
-###Updating the function so it uses the right packages 
+### Updating the function so it uses the right packages 
 ```{r, eval=FALSE}
 #' Read in one nurses' stress data file.
 #'
@@ -213,6 +217,7 @@ read <- function(file_path, max_rows = 100) {
 ```
 
 # Day 2
+# 18  Doing many things at once with functionals
 
 ## How to load more than one file?
 
@@ -243,12 +248,12 @@ hr_files <- here("data-raw/nurses-stress/") |> #pipe the first argument
 #add id
 hr_data <- hr_files |> 
   purrr::map(read) |>
-  purrr::list_rbind(names_to = "files_path_id") 
+  purrr::list_rbind(names_to = "file_path_id") 
 #this id is horrible.. next session will change this 
 
 ```
 
-## 18.5 🧑‍💻 Exercise: Convert the map with reading code into a function
+### 18.5 🧑‍💻 Exercise: Convert the map with reading code into a function
 
 ```{r, eval = FALSE}
 #' Read in all files in the nurse-stress folder
@@ -265,7 +270,7 @@ read_all <- function(file_name) {
 
   hr_data <- hr_files |> 
   purrr::map(read) |>
-  purrr::list_rbind(names_to = "files_path_id") 
+  purrr::list_rbind(names_to = "file_path_id") 
 
   return(hr_data)
 }
@@ -285,7 +290,7 @@ bvp_data <- read_all("BVP.csv.gz")
 
 
 
-18.6 🧑‍💻 Extra exercise: Include a new max_rows argument to read_all()'
+### 18.6 🧑‍💻 Extra exercise: Include a new max_rows argument to read_all()'
 ```{r, eval = FALSE}
 #' Read in all files in the nurse-stress folder
 #'
@@ -323,8 +328,99 @@ read_all("HR.csv.gz", max_rows = Inf)
 
 
 
-## 18.7 🧑‍💻 Extra exercise: Move the here::here() path out of the function
-Se funktions dokumentet here er det opdateret så man kan ændre path
+### 18.7 🧑‍💻 Extra exercise: Move the here::here() path out of the function
+Se funktions dokumentet here er det opdateret så man kan ændre path... det virker ikke.... til næste opgave. 
 
+# 19 Processing strings with regular expressions
+### 19.2 🧑‍💻 Exercise: Inspect and compare the data frames
+
+
+
+```{r}
+hr_data <- read_all("HR.csv.gz")
+
+survey_data <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
+ read()
+
+
+hr_data
+survey_data
+```
+
+### extract the ID
+
+```{r}
+
+hr_data |> 
+  mutate(
+    id = str_extract(
+      file_path_id, 
+      pattern = "/stress/[:alnum:]{2}/"
+    ) |> 
+      str_remove("/stress/") |>  #stress is important to include cuz it really specefies. 
+      str_remove("/"), #remove the stress so we only get the id
+    .before = file_path_id # how to organice the coloums 
+  ) |> 
+  select(-file_path_id)
+
+
+```
+
+
+
+### 19.7 🧑‍💻 Exercise: Convert ‘get ID’ code into a function
+
+```{r}
+#' extract IDs from the data frame
+#'
+#' @param data the data frame from which we want to modify the id so it can be merged
+#'
+#' @returns a dataframe with the new ids
+get_participant_id <- function(data){
+  data_with_id <- data |> 
+  mutate(
+    id = str_extract(
+      file_path_id, 
+      pattern = "/stress/[:alnum:]{2}/"
+    ) |> 
+      str_remove("/stress/") |>  #stress is important to include cuz it really specefies. 
+      str_remove("/"), #remove the stress so we only get the id
+    .before = file_path_id # how to organice the coloums 
+  ) |> 
+  select(-file_path_id)
+  return(data_with_id)
+}
+
+get_participant_id(hr_data)
+
+```
+
+
+
+### 19.8 🧑‍💻 Extra exercise: Simplify the regex with look arounds
+```{r}
+#' Extract Id form the file_path_id
+#'
+#' @param data the coloum that ocntains the ID we would like to extract 
+#'
+#' @returns the data frame with the new id coloum containing the ids with two alnum, where the file_path_ide is removed
+
+get_participant_id <- function(data) {
+  data_with_id <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        "(?<=/stress/)[:alnum:]{2}(?=/)" #?<= this means that it should look for this /stress/ to stand before the id [:alnum:]{2} that we arw looking for and from the following ?=/ is to remove or look for the id/ but not include the /.
+      ),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data_with_id)
+}
+
+get_participant_id(hr_data)
+```
+
+# 20  Using split-apply-combine to help in processing
 
 
