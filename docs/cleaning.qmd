@@ -16,14 +16,18 @@ source(here::here("R/functions.R"))
 hr_data <- read_all("HR.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
+
+hr_data_1 <- read_sensor_data("HR.csv.gz")
 ```
 
 
 ## Prepare ibi data
 ```{r}
-hr_data <- read_all("HR.csv.gz") |>
+ibi_data <- read_all("IBI.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
+
+ibi_data_1 <- read_sensor_data("IBI.csv.gz")
 ```
 
 ## Prepare temp data
@@ -31,6 +35,8 @@ hr_data <- read_all("HR.csv.gz") |>
 temp_data <- read_all("TEMP.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
+
+temp_data_1 <- read_sensor_data("TEMP.csv.gz")
 ```
 
 
@@ -39,6 +45,8 @@ temp_data <- read_all("TEMP.csv.gz") |>
 bvp_data <- read_all("BVP.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
+
+bvp_data_1 <- read_sensor_data("BVP-csv.gz")
 ```
 
 
@@ -47,4 +55,6 @@ bvp_data <- read_all("BVP.csv.gz") |>
 eda_data <- read_all("EDA.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
+
+eda_data_1 <- read_sensor_data("EDA_csv.gz")
 ```
