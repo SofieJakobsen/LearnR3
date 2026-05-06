@@ -430,35 +430,47 @@ hr_data <- read_all("HR.csv.gz") |>
 
 hr_data
 
+```
+
+
+Now we try different functions
+
+
+```{r}
 
 hr_data |>
-  summarise(across(hr, mean))
+  summarise(across(hr, mean)) #something about anonymous function
 
 hr_data |>
-  summarise(across(hr, list(mean, median)))
-
+  summarise(across(hr, list(mean, median))) #adding the median in a list form so  tell the function to run on both of these. 
 
 
 
 hr_data |>
-  summarise(across(hr, list(mean = mean)))
+  summarise(across(hr, list(mean = mean))) # the first mean is the name the second is the function. this add a name ot the results. 
+
+hr_data |> 
+  summarise(across(hr, \(x) mean(x, na.rm =TRUE))) #the \ is the same as writing fintion(mean(ect))
 
 
 hr_data |>
   summarise(
     across(
       hr,
-      list(mean = mean, sd = sd, median = median)
+      list(mean = mean, 
+           sd = sd, 
+           median = median)
     )
   )
 
 
-
 hr_data |>
   summarise(
-    across(
+    across(                        #Support tiddy, select covered in the first course.  
       where(is.numeric),
-      list(mean = mean, sd = sd, median = median)
+      list(mean = mean, 
+           sd = sd, 
+           median = median)
     )
   )
 ```
@@ -466,19 +478,73 @@ hr_data |>
 
 
 
+### 20.4 Finding the right date
+Working with dates.... not fn to work with
+
+```{r}
+hr_data |>
+  mutate(
+    datetime = lubridate::round_date(collection_datetime, unit = "minute"), # learn to use the round_date function from lurbidate packages
+    .before = collection_datetime
+  )
+```
 
 
 
 
+### 20.5 Summarising by groups
+
+```{r}
+hr_data |>
+  mutate(
+    collection_datetime = lubridate::round_date(
+      collection_datetime,
+      unit = "minute"
+    )
+  ) |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime) # this is splitting the data into a group we want to split the data by. so first the coloum we want to group by lke mayeb group in my own data. and then collection date times 
+  )
+```
+
+
+### 20.6 🧑‍💻 Exercise: Convert the summarising code into a function
 
 
 
+```{r}
+#' Summraise data by daytime, mean, sd, median. across all numeric values?
+#'
+#' @param data the data fram eg HR 
+#'
+#' @returns a data frame with ids, collection daytime and each daytime mean, sd and median 
+
+summarise_by_datetime <- function(data) {
+  summarised_data <- data |>
+    # Fill in below with the code we just wrote.
+    dplyr::mutate(
+    collection_datetime = lubridate::round_date(
+      collection_datetime,
+      unit = "minute"
+    )
+  ) |>
+  dplyr::summarise(
+    dplyr::across(
+      tidyselect::where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime)
+  )
+  return(summarised_data)
+}
+
+summarise_by_datetime(hr_data)
+```
 
 
-
-
-
-
-
-
+### 20.7 🧑‍💻 Exercise: Start filling in docs/cleaning.qmd 
 
