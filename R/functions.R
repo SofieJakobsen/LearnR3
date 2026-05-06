@@ -110,3 +110,20 @@ summarise_by_datetime <- function(data) {
     )
   return(summarised_data)
 }
+
+
+#' Read file and process it, read all files, get ID and summarize by date.
+#'
+#' @param filename the files the function should find eg HR.csv.gz
+#' @param max_rows The number of rows it should load
+#'
+#' @returns a colelcted file with IDs groups ect
+
+read_sensor_data <- function(filename, max_rows = 100) {
+  data <- read_all(filename, max_rows = max_rows) |>
+    get_participant_id() |>
+    summarise_by_datetime()
+  return(data)
+}
+
+read_sensor_data("HR.csv.gz")
