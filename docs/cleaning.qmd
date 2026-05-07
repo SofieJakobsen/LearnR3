@@ -58,3 +58,18 @@ eda_data <- read_all("EDA.csv.gz") |>
 
 eda_data_1 <- read_sensor_data("EDA.csv.gz")
 ```
+
+## Process survey data
+Load and clean the survey data
+```{r}
+survey_tidy <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read() |>
+  tidy_survey_dates()
+
+survey_long <- survey_tidy |>
+  survey_to_long()
+```
+
+
+
+

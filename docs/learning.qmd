@@ -601,14 +601,216 @@ read_sensor_data("HR.csv.gz", unit = "week")
 
 
 
-# 21  Pivoting your data between long and wide
+# 21  Pivoting your data between long and wide¨
+our HR data is now in a long format. we ahve same recording for mutible ID in multiple rows where the survey_data is in a not long format. we have ID and time format with stard and end time. we want to make the short datafram into a long dataframe. and a collection time into a HR data. 
+for this we use Pivoting which change from long to wide format and the other way around. 
+
+## Pivot longer 
+
+load the survey data again to make sure it is there
+
+```{r}
+survey_data <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read() # our read function that only takes 100 rows. this is just to test the code if it works. ofc u should use all data. 
+survey_data
+```
+
+```{r, eval=FALSE}
+survey_data |>
+  dplyr::mutate(date = lubridate::as_date(date))
+
+survey_data |>
+  dplyr::mutate(date = lubridate::mdy(date)) #reform the date so it matches the HR data frame 
+```
+
+
+
+```{r, eval=FALSE}
+survey_data |>
+  mutate(
+    date = lubridate::mdy(date),
+    start_datetime = as_datetime(paste(date, start_time)),
+    end_datetime = as_datetime(paste(date, end_time)),
+    .before = start_time
+  )
+
+
+#remove the coloums that are new "duplicated"
+survey_tidy <- survey_data |>
+  mutate(
+    date = mdy(date),
+    start_datetime = as_datetime(paste(date, start_time)),
+    end_datetime = as_datetime(paste(date, end_time)),
+    datetime_id = start_datetime,
+    .before = start_time
+  ) |>
+  select(-c(date, start_time, end_time, duration))
+
+
+```
+
+### now we want to make it longer (pivot it longer) 
+```{r, eval=FALSE}
+survey_tidy |> 
+  select(id, datetime_id, start_datetime, end_datetime) |> 
+  pivot_longer(c(start_datetime, start_datetime)) # need to choose coloum it can pivot 
+#it is now longer
+
+
+survey_tidy |> 
+  select(id, datetime_id, start_datetime, end_datetime) |> 
+  pivot_longer(c(start_datetime, start_datetime), names_to = NULL) # need to choose coloum it can pivot 
+#remove the name coloum with meaning less names 
+
+
+survey_tidy |> 
+  select(id, datetime_id, start_datetime, end_datetime) |> 
+  pivot_longer(c(start_datetime, start_datetime), names_to = NULL, values_to = "collection_datetime") # need to choose coloum it can pivot 
+#it now has a better name in the value coloum
+
+#now we need it from start to end time to every min time. 
+survey_tidy |> 
+  select(id, datetime_id, start_datetime, end_datetime) |> 
+  pivot_longer(c(start_datetime, start_datetime), names_to = NULL, values_to = "collection_datetime") |> 
+  complete(collection_datetime = seq(min(collection_datetime),
+                                     max(collection_datetime),
+                                     by = 60)) #it reads a seconds so now it will be min
+
+# it has NA values we need to group the data 
+survey_tidy |> 
+  select(id, datetime_id, start_datetime, end_datetime) |> 
+  pivot_longer(c(start_datetime, end_datetime), names_to = NULL, values_to = "collection_datetime") |> 
+  group_by(pick(-collection_datetime)) |> 
+  complete(collection_datetime = seq(min(collection_datetime),
+                                     max(collection_datetime),
+                                     by = 60)) |> #it reads a seconds so now it will be min
+  ungroup()
+
+survey_tidy |>
+  select(id, datetime_id, start_datetime, end_datetime) |>
+  pivot_longer(
+    c(start_datetime, end_datetime),
+    names_to = NULL,
+    values_to = "collection_datetime"
+  ) |>
+  group_by(pick(-collection_datetime)) |>
+  complete(
+    collection_datetime = seq(
+      min(collection_datetime),
+      max(collection_datetime),
+      by = 60
+    )
+  ) |>
+  ungroup()
+
+```
+
+
+
+### 21.4 🧑‍💻 Exercise: Convert into two new functions
+```{r, eval=FALSE}
+#' Make survey data tidy 
+#'
+#' @param data the stat that needs to be tidy.
+#'
+#' @returns data frame where change format for date to mdy, add date-start time and one with endtime and remove date,start_time_end time and duration
+
+tidy_survey_dates <- function(data){
+  tidy <- data |>
+   dplyr::mutate(
+    date = lubridate::mdy(date),
+    start_datetime = lubridate::as_datetime(paste(date, start_time)),
+    end_datetime = lubridate::as_datetime(paste(date, end_time)),
+    datetime_id = start_datetime,
+    .before = start_time
+  ) |>
+  select(-c(date, start_time, end_time, duration))
+  return(tidy)
+}
+
+survey_tidy <- tidy_survey_dates(survey_data)
+survey_tidy
+
+#' Make survey data long usign pivot
+#'
+#' @param data the stat that needs to be longer 
+#'
+#' @returns data frame where change the start-end time longer by increse pr min. 
+
+survey_to_long <- function(data){
+  survey_longer <- data |>
+  dplyr::select(id, datetime_id, start_datetime, end_datetime) |>
+  tidyr::pivot_longer(dply::select(start_datetime, end_datetime),
+    #c(start_datetime, end_datetime),
+    #names_to = NULL,
+    #values_to = "collection_datetime"
+  ) |>
+  dplyr::group_by(pick(-collection_datetime)) |>
+  tidyr::complete(
+    collection_datetime = seq(
+      min(collection_datetime),
+      max(collection_datetime),
+      by = 60
+    )
+  ) |>
+  dplyr::ungroup()
+  return(survey_longer)
+}
+
+
+
+survey_long <- survey_to_long(survey_tidy)
+survey_long
+
+
+#test:
+survey_data |>
+  tidy_survey_dates() |>
+  survey_to_long()
+```
+
+### testing if it can pick it up form functions
+```{r}
+
+#test:
+survey_data |>
+  tidy_survey_dates() |>
+  survey_to_long()
+```
+
+# 22 Joining data together
 
 
 
 
 
+```{r}
+survey_long
+
+survey_tidy
+
+survey_long |> 
+  dplyr::left_join(survey_tidy)
+
+survey_tidy |> 
+  count(id, datetime_id) |> 
+  filter(n > 1) # filer so we find the overlaps 
 
 
+survey_long |> 
+  right_join(survey_tidy)
+
+survey_long |> 
+  full_join(survey_tidy)
+
+
+```
+
+This warning:   Detected an unexpected many-to-many relationship between `x` and `y`.
+a value will be there more time... inspect the results. so we need to specefy it more. 
+
+
+## Merge 3 data 
 
 
 

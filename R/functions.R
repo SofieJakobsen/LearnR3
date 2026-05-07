@@ -127,3 +127,57 @@ read_sensor_data <- function(filename, max_rows = 100) {
 }
 
 read_sensor_data("HR.csv.gz")
+
+
+
+
+
+
+#' Make survey data tidy
+#'
+#' @param data the stat that needs to be tidy.
+#'
+#' @returns data frame where change format for date to mdy, add date-start time and one with endtime and remove date,start_time_end time and duration
+
+tidy_survey_dates <- function(data){
+  tidy <- data |>
+    dplyr::mutate(
+      date = lubridate::mdy(date),
+      start_datetime = lubridate::as_datetime(paste(date, start_time)),
+      end_datetime = lubridate::as_datetime(paste(date, end_time)),
+      datetime_id = start_datetime,
+      .before = start_time
+    ) |>
+    select(-c(date, start_time, end_time, duration))
+  return(tidy)
+}
+
+
+
+#' Make survey data long usign pivot
+#'
+#' @param data the stat that needs to be longer
+#'
+#' @returns data frame where change the start-end time longer by increse pr min.
+
+survey_to_long <- function(data){
+  survey_longer <- data |>
+    dplyr::select(id, datetime_id, start_datetime, end_datetime) |>
+    tidyr::pivot_longer(
+      c(start_datetime, end_datetime),
+      names_to = NULL,
+      values_to = "collection_datetime"
+    ) |>
+    dplyr::group_by(pick(-collection_datetime)) |>
+    tidyr::complete(
+      collection_datetime = seq(
+        min(collection_datetime),
+        max(collection_datetime),
+        by = 60
+      )
+    ) |>
+    dplyr::ungroup()
+  return(survey_longer)
+}
+
+
